@@ -2,6 +2,16 @@
   "name": "abort-controller-x",
   "version": "0.1.0",
   "description": "Abortable async function helpers",
+  "keywords": [
+    "abort",
+    "abortable",
+    "cancel",
+    "cancelable",
+    "cancellable",
+    "abort-controller",
+    "async",
+    "coroutine"
+  ],
   "repository": "deeplay-io/abort-controller-x",
   "sideEffects": false,
   "main": "lib/index.js",
