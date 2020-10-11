@@ -1,0 +1,38 @@
+{
+  "name": "abort-controller-x",
+  "version": "0.1.0",
+  "description": "Abortable async function helpers",
+  "repository": "deeplay-io/abort-controller-x",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "src",
+    "lib",
+    "es"
+  ],
+  "scripts": {
+    "clean": "rimraf lib es",
+    "test": "jest",
+    "build:lib": "tsc -P tsconfig.build.json",
+    "build:es": "tsc -P tsconfig.es.json",
+    "build": "npm run build:lib && npm run build:es",
+    "prepublishOnly": "npm test && npm run clean && npm run build"
+  },
+  "author": "Daniel Lytkin <dan.lytkin@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/defer-promise": "^1.0.0",
+    "@types/jest": "^26.0.14",
+    "defer-promise": "^2.0.1",
+    "jest": "^26.5.0",
+    "prettier": "^2.1.2",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "abort-controller": "^3.0.0"
+  }
+}
