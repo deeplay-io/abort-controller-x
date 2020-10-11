@@ -89,6 +89,9 @@ process.on('SIGTERM', () => {
 });
 ```
 
+The above example can be rewritten in a more ergonomic way using [`run`](#run)
+helper.
+
 Usually you should only create `AbortController` somewhere on the top level, and
 in regular code use `async`/`await` and pass `AbortSignal` to abortable
 functions provided by this library or custom ones composed of other abortable
@@ -355,6 +358,22 @@ const stop = run(async signal => {
 await stop();
 ```
 
+This function is also useful with React `useEffect` hook:
+
+```ts
+// make requests periodically while the component is mounted
+useEffect(
+  () =>
+    run(async signal => {
+      while (true) {
+        await makeRequest(signal);
+        await delay(signal, 1000);
+      }
+    }),
+  [],
+);
+```
+
 ### `AbortError`
 
 ```ts
@@ -420,5 +439,6 @@ Without `catchAbortError`, aborting would result in unhandled promise rejection.
 
 [npm-image]: https://badge.fury.io/js/abort-controller-x.svg
 [npm-url]: https://badge.fury.io/js/abort-controller-x
-[travis-image]: https://travis-ci.org/deeplay-io/abort-controller-x.svg?branch=master
+[travis-image]:
+  https://travis-ci.org/deeplay-io/abort-controller-x.svg?branch=master
 [travis-url]: https://travis-ci.org/deeplay-io/abort-controller-x
