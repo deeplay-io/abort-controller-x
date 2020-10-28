@@ -160,3 +160,20 @@ test('error thrown from fork', async () => {
   expect(signal.addEventListener).toHaveBeenCalledTimes(1);
   expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
 });
+
+test('async defer', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const deferredFn = jest.fn();
+
+  await spawn(signal, async (signal, {defer}) => {
+    await delay(signal, 0);
+
+    defer(() => {
+      deferredFn();
+    });
+  });
+
+  expect(deferredFn).toHaveBeenCalledTimes(1);
+});

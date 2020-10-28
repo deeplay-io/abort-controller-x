@@ -153,11 +153,15 @@ export function spawn<T>(
   promise = promise.finally(() => {
     removeAbortListener();
     removeSpawnAbortListener();
-  });
 
-  for (let i = deferredFunctions.length - 1; i >= 0; i--) {
-    promise = promise.finally(deferredFunctions[i]);
-  }
+    let deferPromise = Promise.resolve();
+
+    for (let i = deferredFunctions.length - 1; i >= 0; i--) {
+      deferPromise = deferPromise.finally(deferredFunctions[i]);
+    }
+
+    return deferPromise;
+  });
 
   return promise;
 }
