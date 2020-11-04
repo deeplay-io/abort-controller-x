@@ -43,6 +43,10 @@ export function spawn<T>(
   signal: AbortSignal,
   fn: (signal: AbortSignal, effects: SpawnEffects) => Promise<T>,
 ): Promise<T> {
+  if (signal.aborted) {
+    return Promise.reject(new AbortError());
+  }
+
   const deferredFunctions: Array<() => void | Promise<void>> = [];
 
   /**

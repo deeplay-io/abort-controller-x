@@ -1,4 +1,4 @@
-import {AbortController} from 'abort-controller';
+import {AbortController, AbortSignal} from 'abort-controller';
 import {spawn} from './spawn';
 import {forever} from './forever';
 import {delay} from './delay';
@@ -176,4 +176,23 @@ test('async defer', async () => {
   });
 
   expect(deferredFn).toHaveBeenCalledTimes(1);
+});
+
+test('abort before spawn', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  signal.addEventListener = jest.fn(signal.addEventListener);
+  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  abortController.abort();
+
+  const executor = jest.fn(async (signal: AbortSignal) => {});
+
+  await expect(spawn(signal, executor)).rejects.toMatchObject({
+    name: 'AbortError',
+  });
+
+  expect(executor).not.toHaveBeenCalled();
+
+  expect(signal.addEventListener).not.toHaveBeenCalled();
+  expect(signal.removeEventListener).not.toHaveBeenCalled();
 });
