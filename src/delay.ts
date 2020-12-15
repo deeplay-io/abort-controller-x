@@ -1,4 +1,3 @@
-import {AbortSignal} from 'abort-controller';
 import {execute} from './execute';
 
 /**
@@ -8,7 +7,10 @@ import {execute} from './execute';
  * The delay time is specified as a `Date` object or as an integer denoting
  * milliseconds to wait.
  */
-export function delay(signal: AbortSignal, dueTime: number | Date): Promise<void> {
+export function delay(
+  signal: AbortSignal,
+  dueTime: number | Date,
+): Promise<void> {
   return execute<void>(signal, resolve => {
     const ms =
       typeof dueTime === 'number' ? dueTime : dueTime.getTime() - Date.now();

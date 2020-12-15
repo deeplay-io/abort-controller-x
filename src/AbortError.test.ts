@@ -1,4 +1,4 @@
-import {AbortController} from 'abort-controller';
+import AbortController from 'node-abort-controller';
 import {
   AbortError,
   catchAbortError,

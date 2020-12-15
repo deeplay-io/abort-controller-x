@@ -1,4 +1,4 @@
-import {AbortSignal, AbortController} from 'abort-controller';
+import AbortController from 'node-abort-controller';
 import {AbortError, catchAbortError, isAbortError} from './AbortError';
 
 export type SpawnEffects = {

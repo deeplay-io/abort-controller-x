@@ -40,7 +40,7 @@ yarn add abort-controller-x
 ## Abort Controller
 
 See
-[`AbortController` MDN page](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).
+[`AbortController` MDN page](https://developer.mozilla.org/en-US/docs/Web/API/AbortController). Use [`node-abort-controller`](https://www.npmjs.com/package/node-abort-controller) to polyfill `AbortController` in NodeJS.
 
 ## Abortable Functions
 

@@ -1,4 +1,3 @@
-import {AbortSignal} from 'abort-controller';
 import {execute} from './execute';
 
 /**

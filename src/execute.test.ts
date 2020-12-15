@@ -1,4 +1,4 @@
-import {AbortController} from 'abort-controller';
+import AbortController from 'node-abort-controller';
 import defer = require('defer-promise');
 import {execute} from './execute';
 import {nextTick} from './utils/nextTick';

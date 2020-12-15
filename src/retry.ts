@@ -1,5 +1,4 @@
 import {delay} from './delay';
-import {AbortSignal} from 'abort-controller';
 import {rethrowAbortError} from './AbortError';
 
 export type RetryOptions = {

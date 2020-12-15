@@ -1,5 +1,4 @@
-import {AbortController} from 'abort-controller';
-import {Event} from 'event-target-shim';
+import AbortController from 'node-abort-controller';
 import {nextTick} from './utils/nextTick';
 import {waitForEvent} from './waitForEvent';
 
@@ -45,12 +44,13 @@ test('fulfill', async () => {
   signal.addEventListener = jest.fn(signal.addEventListener);
   signal.removeEventListener = jest.fn(signal.removeEventListener);
 
-  const eventTarget = new AbortController().signal;
+  const eventTargetController = new AbortController();
+  const eventTarget = eventTargetController.signal;
   eventTarget.removeEventListener = jest.fn(eventTarget.removeEventListener);
 
   let result: PromiseSettledResult<Event> | undefined;
 
-  waitForEvent(signal, eventTarget, 'test').then(
+  waitForEvent(signal, eventTarget, 'abort').then(
     value => {
       result = {status: 'fulfilled', value};
     },
@@ -59,13 +59,13 @@ test('fulfill', async () => {
     },
   );
 
-  eventTarget.dispatchEvent({type: 'test'});
+  eventTargetController.abort();
 
   await nextTick();
 
   expect(result).toMatchObject({
     status: 'fulfilled',
-    value: {type: 'test'},
+    value: {type: 'abort'},
   });
   expect(eventTarget.removeEventListener).toHaveBeenCalledTimes(1);
 
