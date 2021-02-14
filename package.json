@@ -30,7 +30,7 @@
     "build": "npm run build:lib && npm run build:es",
     "prepublishOnly": "npm test && npm run clean && npm run build"
   },
-  "author": "Daniel Lytkin <dan.lytkin@gmail.com>",
+  "author": "Daniel Lytkin <aikoven@deeplay.io>",
   "license": "MIT",
   "devDependencies": {
     "@types/defer-promise": "^1.0.0",
