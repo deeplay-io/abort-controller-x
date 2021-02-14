@@ -31,7 +31,7 @@ export type RetryOptions = {
    *
    * Rethrow error from this callback to prevent further retries.
    */
-  onError?: (error: any, attempt: number, delayMs: number) => void;
+  onError?: (error: unknown, attempt: number, delayMs: number) => void;
 };
 
 /**

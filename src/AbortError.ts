@@ -12,8 +12,8 @@ export class AbortError extends Error {
 
     this.name = 'AbortError';
 
-    if (typeof (Error as any).captureStackTrace === 'function') {
-      (Error as any).captureStackTrace(this, this.constructor);
+    if (typeof Error.captureStackTrace === 'function') {
+      Error.captureStackTrace(this, this.constructor);
     }
   }
 }
