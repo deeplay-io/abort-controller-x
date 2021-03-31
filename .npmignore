@@ -1,0 +1,6 @@
+**/*.test.ts
+jest.config.ts
+.travis.yml
+.gitignore
+.prettierrc
+yarn-error.log
