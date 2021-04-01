@@ -2,8 +2,6 @@
 
 Abortable async function helpers.
 
-# Table of Contents
-
 <!-- TOC depthFrom:2 depthTo:4 -->
 
 - [Installation](#installation)
