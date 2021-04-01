@@ -12,7 +12,7 @@ import {execute} from './execute';
  *     // Make requests repeatedly with a delay between consecutive requests
  *     while (true) {
  *       await makeRequest(signal, params);
- *       delay(signal, 1000);
+ *       await delay(signal, 1000);
  *     }
  * 
  * Example:
