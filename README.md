@@ -362,6 +362,7 @@ function withLock<T>(
     const lock = await redlock.lock(key, lockTtl);
 
     defer(() => lock.unlock());
+
     fork(async signal => {
       while (true) {
         await delay(signal, lockTtl / 10);
