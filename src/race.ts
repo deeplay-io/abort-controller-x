@@ -18,16 +18,16 @@ import {AbortError, isAbortError} from './AbortError';
  *
  * Example:
  *
- *    const result = await race(signal, signal => [
- *      delay(signal, 1000).then(() => ({status: 'timeout'})),
- *      makeRequest(signal, ...).then(value => ({status: 'success', value})),
- *    ]);
+ *     const result = await race(signal, signal => [
+ *       delay(signal, 1000).then(() => ({status: 'timeout'})),
+ *       makeRequest(signal, params).then(value => ({status: 'success', value})),
+ *     ]);
  *
- *    if (result.status === 'timeout') {
- *      // request timed out
- *    } else {
- *      const response = result.value;
- *    }
+ *     if (result.status === 'timeout') {
+ *       // request timed out
+ *     } else {
+ *       const response = result.value;
+ *     }
  */
 export function race<T extends PromiseLike<any>>(
   signal: AbortSignal,

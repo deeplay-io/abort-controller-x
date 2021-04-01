@@ -16,6 +16,13 @@ import {AbortError, isAbortError} from './AbortError';
  * The promises returned from `executor` must be abortable, i.e. once
  * `innerSignal` is aborted, they must reject with `AbortError` either
  * immediately, or after doing any async cleanup.
+ * 
+ * Example:
+ * 
+ *     const [result1, result2] = await all(signal, signal => [
+ *       makeRequest(signal, params1),
+ *       makeRequest(signal, params2),
+ *     ]);
  */
 export function all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
   signal: AbortSignal,

@@ -10,6 +10,20 @@ export type EventTargetLike<T> =
  * Returns a promise that fulfills when an event of specific type is emitted
  * from given event target and rejects with `AbortError` once `signal` is
  * aborted.
+ *
+ * Example:
+ *
+ *     // Create a WebSocket and wait for connection
+ *     const webSocket = new WebSocket(url);
+ *     
+ *     const openEvent = await race(signal, signal => [
+ *       waitForEvent<WebSocketEventMap['open']>(signal, webSocket, 'open'),
+ *       waitForEvent<WebSocketEventMap['close']>(signal, webSocket, 'close').then(
+ *         event => {
+ *           throw new Error(`Failed to connect to ${url}: ${event.reason}`);
+ *         },
+ *       ),
+ *     ]);
  */
 export function waitForEvent<T>(
   signal: AbortSignal,

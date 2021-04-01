@@ -40,7 +40,10 @@ yarn add abort-controller-x
 ## Abort Controller
 
 See
-[`AbortController` MDN page](https://developer.mozilla.org/en-US/docs/Web/API/AbortController). Use [`node-abort-controller`](https://www.npmjs.com/package/node-abort-controller) to polyfill `AbortController` in NodeJS.
+[`AbortController` MDN page](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).
+Use
+[`node-abort-controller`](https://www.npmjs.com/package/node-abort-controller)
+to polyfill `AbortController` in NodeJS.
 
 ## Abortable Functions
 
@@ -71,7 +74,7 @@ inside a parent function:
 
 ```ts
 /**
- * Make requests repeatedly with delay
+ * Make requests repeatedly with a delay between consecutive requests
  */
 async function makeRequests(signal: AbortSignal): Promise<never> {
   while (true) {
@@ -123,6 +126,15 @@ The promises returned from `executor` must be abortable, i.e. once `innerSignal`
 is aborted, they must reject with `AbortError` either immediately, or after
 doing any async cleanup.
 
+Example:
+
+```ts
+const [result1, result2] = await all(signal, signal => [
+  makeRequest(signal, params1),
+  makeRequest(signal, params2),
+]);
+```
+
 ### `race`
 
 ```ts
@@ -151,7 +163,7 @@ Example:
 ```ts
 const result = await race(signal, signal => [
   delay(signal, 1000).then(() => ({status: 'timeout'})),
-  makeRequest(signal, ...).then(value => ({status: 'success', value})),
+  makeRequest(signal, params).then(value => ({status: 'success', value})),
 ]);
 
 if (result.status === 'timeout') {
@@ -173,6 +185,32 @@ Return a promise that resolves after delay and rejects with `AbortError` once
 The delay time is specified as a `Date` object or as an integer denoting
 milliseconds to wait.
 
+Example:
+
+```ts
+// Make a request repeatedly with a delay between consecutive requests
+while (true) {
+  await makeRequest(signal, params);
+  delay(signal, 1000);
+}
+```
+
+Example:
+
+```ts
+// Make a request repeatedly with a fixed interval
+import {addMilliseconds} from 'date-fns';
+
+let date = new Date();
+
+while (true) {
+  await makeRequest(signal, params);
+
+  date = addMilliseconds(date, 1000);
+  await delay(signal, date);
+}
+```
+
 ### `waitForEvent`
 
 ```ts
@@ -186,6 +224,22 @@ function waitForEvent<T>(
 
 Returns a promise that fulfills when an event of specific type is emitted from
 given event target and rejects with `AbortError` once `signal` is aborted.
+
+Example:
+
+```ts
+// Create a WebSocket and wait for connection
+const webSocket = new WebSocket(url);
+
+const openEvent = await race(signal, signal => [
+  waitForEvent<WebSocketEventMap['open']>(signal, webSocket, 'open'),
+  waitForEvent<WebSocketEventMap['close']>(signal, webSocket, 'close').then(
+    event => {
+      throw new Error(`Failed to connect to ${url}: ${event.reason}`);
+    },
+  ),
+]);
+```
 
 ### `forever`
 
@@ -245,6 +299,89 @@ Run an abortable function with `fork` and `defer` effects attached to it.
 
   Returns a promise returned from a forked function.
 
+Example:
+
+```ts
+// Connect to a database, then start a server, then block until abort.
+// On abort, gracefully shutdown the server, and once done, disconnect
+// from the database.
+spawn(signal, async (signal, {defer}) => {
+  const db = await connectToDb();
+
+  defer(async () => {
+    await db.close();
+  });
+
+  const server = await startServer(db);
+
+  defer(async () => {
+    await server.close();
+  });
+
+  await forever(signal);
+});
+```
+
+Example:
+
+```ts
+// Connect to a database, then start an infinite polling loop.
+// On abort, disconnect from the database.
+spawn(signal, async (signal, {defer}) => {
+  const db = await connectToDb();
+
+  defer(async () => {
+    await db.close();
+  });
+
+  while (true) {
+    await poll(signal, db);
+    await delay(signal, 5000);
+  }
+});
+```
+
+Example:
+
+```ts
+// Acquire a lock and execute a function.
+// Extend the lock while the function is running.
+// Once the function finishes or the signal is aborted, stop extending
+// the lock and release it.
+import Redlock = require('redlock');
+
+const lockTtl = 30_000;
+
+function withLock<T>(
+  signal: AbortSignal,
+  redlock: Redlock,
+  key: string,
+  fn: (signal: AbortSignal) => Promise<T>,
+): Promise<T> {
+  return spawn(signal, async (signal, {fork, defer}) => {
+    const lock = await redlock.lock(key, lockTtl);
+
+    defer(() => lock.unlock());
+    fork(async signal => {
+      while (true) {
+        await delay(signal, lockTtl / 10);
+        await lock.extend(lockTtl);
+      }
+    });
+
+    return await fn(signal);
+  });
+}
+
+const redlock = new Redlock([redis], {
+  retryCount: -1,
+});
+
+await withLock(signal, redlock, 'the-lock-key', async signal => {
+  // ...
+});
+```
+
 ### `retry`
 
 ```ts
@@ -262,7 +399,7 @@ type RetryOptions = {
 };
 ```
 
-Retry function with exponential backoff.
+Retry a function with exponential backoff.
 
 - `RetryOptions.baseMs`
 
