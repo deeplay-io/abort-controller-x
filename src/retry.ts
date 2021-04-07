@@ -1,3 +1,4 @@
+import {AbortSignal} from 'node-abort-controller';
 import {delay} from './delay';
 import {rethrowAbortError} from './AbortError';
 

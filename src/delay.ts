@@ -1,4 +1,5 @@
 import {execute} from './execute';
+import {AbortSignal} from 'node-abort-controller';
 
 /**
  * Returns a promise that fulfills after delay and rejects with
