@@ -1,6 +1,6 @@
 {
   "name": "abort-controller-x",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Abortable async function helpers",
   "keywords": [
     "abort",
