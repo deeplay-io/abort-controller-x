@@ -11,7 +11,7 @@ test('external abort', async () => {
   const eventTarget = new AbortController().signal;
   eventTarget.removeEventListener = jest.fn(eventTarget.removeEventListener);
 
-  let result: PromiseSettledResult<Event> | undefined;
+  let result: PromiseSettledResult<any> | undefined;
 
   waitForEvent(signal, eventTarget, 'test').then(
     value => {
@@ -48,7 +48,7 @@ test('fulfill', async () => {
   const eventTarget = eventTargetController.signal;
   eventTarget.removeEventListener = jest.fn(eventTarget.removeEventListener);
 
-  let result: PromiseSettledResult<Event> | undefined;
+  let result: PromiseSettledResult<any> | undefined;
 
   waitForEvent(signal, eventTarget, 'abort').then(
     value => {

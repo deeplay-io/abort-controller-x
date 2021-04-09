@@ -1,3 +1,5 @@
+import {AbortSignal} from 'node-abort-controller';
+
 /**
  * Thrown when an abortable function was aborted.
  *

@@ -1,4 +1,4 @@
-import AbortController from 'node-abort-controller';
+import AbortController, {AbortSignal} from 'node-abort-controller';
 import {AbortError, isAbortError} from './AbortError';
 
 /**
@@ -16,9 +16,9 @@ import {AbortError, isAbortError} from './AbortError';
  * The promises returned from `executor` must be abortable, i.e. once
  * `innerSignal` is aborted, they must reject with `AbortError` either
  * immediately, or after doing any async cleanup.
- * 
+ *
  * Example:
- * 
+ *
  *     const [result1, result2] = await all(signal, signal => [
  *       makeRequest(signal, params1),
  *       makeRequest(signal, params2),

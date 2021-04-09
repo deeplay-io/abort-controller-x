@@ -1,4 +1,5 @@
 import {AbortError} from './AbortError';
+import {AbortSignal} from 'node-abort-controller';
 
 /**
  * Similar to `new Promise(executor)`, but allows executor to return abort
