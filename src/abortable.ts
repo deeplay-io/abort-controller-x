@@ -11,6 +11,12 @@ export function abortable<T>(
   signal: AbortSignal,
   promise: PromiseLike<T>,
 ): Promise<T> {
+  if (signal.aborted) {
+    // prevent unhandled rejection
+    const noop = () => {};
+    promise.then(noop, noop);
+  }
+
   return execute<T>(signal, (resolve, reject) => {
     promise.then(resolve, reject);
 
