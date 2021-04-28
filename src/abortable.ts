@@ -1,4 +1,4 @@
-import {AbortSignal} from 'node-abort-controller';
+import {AbortSignal} from 'abort-controller';
 import {execute} from './execute';
 
 /**

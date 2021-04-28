@@ -1,4 +1,4 @@
-import AbortController, {AbortSignal} from 'node-abort-controller';
+import AbortController, {AbortSignal} from 'abort-controller';
 import {spawn} from './spawn';
 import {forever} from './forever';
 import {delay} from './delay';

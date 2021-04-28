@@ -1,4 +1,4 @@
-import AbortController from 'node-abort-controller';
+import AbortController from 'abort-controller';
 import {nextTick} from './utils/nextTick';
 import {waitForEvent} from './waitForEvent';
 
