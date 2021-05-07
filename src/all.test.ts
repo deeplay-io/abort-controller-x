@@ -195,3 +195,15 @@ test('reject during cleanup', async () => {
   expect(signal.addEventListener).toHaveBeenCalledTimes(1);
   expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
 });
+
+test('empty', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  signal.addEventListener = jest.fn(signal.addEventListener);
+  signal.removeEventListener = jest.fn(signal.removeEventListener);
+
+  await expect(all(signal, signal => [])).resolves.toEqual([]);
+
+  expect(signal.addEventListener).toHaveBeenCalledTimes(0);
+  expect(signal.removeEventListener).toHaveBeenCalledTimes(0);
+});

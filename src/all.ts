@@ -152,6 +152,11 @@ export function all<T>(
 
     const promises = executor(innerAbortController.signal);
 
+    if (promises.length === 0) {
+      resolve([]);
+      return;
+    }
+
     const abortListener = () => {
       innerAbortController.abort();
     };
