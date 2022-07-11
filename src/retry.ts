@@ -37,10 +37,14 @@ export type RetryOptions = {
 
 /**
  * Retry function with exponential backoff.
+ *
+ * The function receives AbortSignal, attempt number starting with 0, and reset
+ * function that sets attempt number to -1 so that the next attempt will be
+ * made without delay.
  */
 export async function retry<T>(
   signal: AbortSignal,
-  fn: (signal: AbortSignal, attempt: number) => Promise<T>,
+  fn: (signal: AbortSignal, attempt: number, reset: () => void) => Promise<T>,
   options: RetryOptions = {},
 ): Promise<T> {
   const {
@@ -50,9 +54,15 @@ export async function retry<T>(
     maxAttempts = Infinity,
   } = options;
 
-  for (let attempt = 0; ; attempt++) {
+  let attempt = 0;
+
+  const reset = () => {
+    attempt = -1;
+  };
+
+  while (true) {
     try {
-      return await fn(signal, attempt);
+      return await fn(signal, attempt, reset);
     } catch (error) {
       rethrowAbortError(error);
 
@@ -60,15 +70,25 @@ export async function retry<T>(
         throw error;
       }
 
-      // https://aws.amazon.com/ru/blogs/architecture/exponential-backoff-and-jitter/
-      const backoff = Math.min(maxDelayMs, Math.pow(2, attempt) * baseMs);
-      const delayMs = Math.round((backoff * (1 + Math.random())) / 2);
+      let delayMs: number;
+
+      if (attempt === -1) {
+        delayMs = 0;
+      } else {
+        // https://aws.amazon.com/ru/blogs/architecture/exponential-backoff-and-jitter/
+        const backoff = Math.min(maxDelayMs, Math.pow(2, attempt) * baseMs);
+        delayMs = Math.round((backoff * (1 + Math.random())) / 2);
+      }
 
       if (onError) {
         onError(error, attempt, delayMs);
       }
 
-      await delay(signal, delayMs);
+      if (delayMs !== 0) {
+        await delay(signal, delayMs);
+      }
+
+      attempt += 1;
     }
   }
 }

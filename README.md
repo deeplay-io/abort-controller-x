@@ -386,7 +386,7 @@ await withLock(signal, redlock, 'the-lock-key', async signal => {
 ```ts
 function retry<T>(
   signal: AbortSignal,
-  fn: (signal: AbortSignal, attempt: number) => Promise<T>,
+  fn: (signal: AbortSignal, attempt: number, reset: () => void) => Promise<T>,
   options?: RetryOptions,
 ): Promise<T>;
 
@@ -394,11 +394,28 @@ type RetryOptions = {
   baseMs?: number;
   maxDelayMs?: number;
   maxAttempts?: number;
-  onError?: (error: any, attempt: number, delayMs: number) => void;
+  onError?: (error: unknown, attempt: number, delayMs: number) => void;
 };
 ```
 
 Retry a function with exponential backoff.
+
+- `fn`
+
+  A function that will be called and retried in case of error. It receives:
+
+  - `signal`
+
+    `AbortSignal` that is aborted when the signal passed to `retry` is aborted.
+
+  - `attempt`
+
+    Attempt number starting with 0.
+
+  - `reset`
+
+    Function that sets attempt number to -1 so that the next attempt will be
+    made without delay.
 
 - `RetryOptions.baseMs`
 
