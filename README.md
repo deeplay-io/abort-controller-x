@@ -1,6 +1,6 @@
 # Abort Controller Extras [![npm version][npm-image]][npm-url]
 
-Abortable async function helpers.
+Abortable async function primitives and combinators.
 
 - [Installation](#installation)
 - [Abort Controller](#abort-controller)
