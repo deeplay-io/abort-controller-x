@@ -1,4 +1,4 @@
-import {catchAbortError} from './AbortError';
+import {catchAbortError} from './AbortError.js';
 
 /**
  * Invokes an abortable function with implicitly created `AbortSignal`.

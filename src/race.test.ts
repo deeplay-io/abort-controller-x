@@ -1,7 +1,7 @@
 import defer = require('defer-promise');
-import {AbortError} from './AbortError';
-import {race} from './race';
-import {nextTick} from './utils/nextTick';
+import {AbortError} from './AbortError.js';
+import {race} from './race.js';
+import {nextTick} from './utils/nextTick.js';
 
 test('external abort', async () => {
   const abortController = new AbortController();

@@ -4,7 +4,7 @@ import {
   isAbortError,
   rethrowAbortError,
   throwIfAborted,
-} from './AbortError';
+} from './AbortError.js';
 
 test('isAbortError', () => {
   expect(isAbortError({})).toBe(false);

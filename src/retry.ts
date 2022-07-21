@@ -1,5 +1,5 @@
-import {delay} from './delay';
-import {rethrowAbortError} from './AbortError';
+import {delay} from './delay.js';
+import {rethrowAbortError} from './AbortError.js';
 
 export type RetryOptions = {
   /**

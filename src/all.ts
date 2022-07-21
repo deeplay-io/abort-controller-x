@@ -1,4 +1,4 @@
-import {AbortError, isAbortError} from './AbortError';
+import {AbortError, isAbortError} from './AbortError.js';
 
 /**
  * Abortable version of `Promise.all`.

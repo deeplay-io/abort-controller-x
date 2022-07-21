@@ -1,4 +1,4 @@
-import {execute} from './execute';
+import {execute} from './execute.js';
 
 /**
  * Return a promise that never fulfills and only rejects with `AbortError` once

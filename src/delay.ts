@@ -1,4 +1,4 @@
-import {execute} from './execute';
+import {execute} from './execute.js';
 
 /**
  * Returns a promise that fulfills after delay and rejects with

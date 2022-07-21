@@ -1,4 +1,4 @@
-import {execute} from './execute';
+import {execute} from './execute.js';
 
 /**
  * Wrap a promise to reject with `AbortError` once `signal` is aborted.

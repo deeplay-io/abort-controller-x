@@ -1,6 +1,6 @@
-import {spawn} from './spawn';
-import {forever} from './forever';
-import {delay} from './delay';
+import {spawn} from './spawn.js';
+import {forever} from './forever.js';
+import {delay} from './delay.js';
 
 test('fork manual abort', async () => {
   const abortController = new AbortController();

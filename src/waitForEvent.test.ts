@@ -1,5 +1,5 @@
-import {nextTick} from './utils/nextTick';
-import {waitForEvent} from './waitForEvent';
+import {nextTick} from './utils/nextTick.js';
+import {waitForEvent} from './waitForEvent.js';
 
 test('external abort', async () => {
   const abortController = new AbortController();
