@@ -1,4 +1,3 @@
-import AbortController, {AbortSignal} from 'node-abort-controller';
 import defer = require('defer-promise');
 import {AbortError} from './AbortError';
 import {race} from './race';

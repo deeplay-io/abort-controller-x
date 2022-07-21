@@ -1,4 +1,3 @@
-import AbortController, {AbortSignal} from 'node-abort-controller';
 import {AbortError, isAbortError} from './AbortError';
 
 /**

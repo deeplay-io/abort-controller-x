@@ -1,4 +1,3 @@
-import AbortController from 'node-abort-controller';
 import {forever} from './forever';
 import {nextTick} from './utils/nextTick';
 

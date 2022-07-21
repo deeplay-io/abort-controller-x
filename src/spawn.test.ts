@@ -1,4 +1,3 @@
-import AbortController, {AbortSignal} from 'node-abort-controller';
 import {spawn} from './spawn';
 import {forever} from './forever';
 import {delay} from './delay';
@@ -16,7 +15,7 @@ test('fork manual abort', async () => {
       actions.push('fork start');
       try {
         await forever(signal);
-      } catch (err) {
+      } catch (err: any) {
         actions.push(`fork abort: ${err.message}`);
       }
     });
@@ -56,7 +55,7 @@ test('fork abort on spawn finish', async () => {
       actions.push('fork start');
       try {
         await forever(signal);
-      } catch (err) {
+      } catch (err: any) {
         actions.push(`fork abort: ${err.message}`);
       }
     });
@@ -92,7 +91,7 @@ test('fork abort on spawn error', async () => {
       actions.push('fork start');
       try {
         await forever(signal);
-      } catch (err) {
+      } catch (err: any) {
         actions.push(`fork abort: ${err.message}`);
       }
     });
@@ -139,7 +138,7 @@ test('error thrown from fork', async () => {
 
     try {
       await forever(signal);
-    } catch (err) {
+    } catch (err: any) {
       actions.push(`spawn abort: ${err.message}`);
       throw err;
     }

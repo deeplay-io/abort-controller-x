@@ -1,4 +1,3 @@
-import {AbortSignal} from 'node-abort-controller';
 import {execute} from './execute';
 
 export type EventTargetLike<T> =
