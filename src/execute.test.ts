@@ -1,4 +1,4 @@
-import defer = require('defer-promise');
+import defer from 'defer-promise';
 import {execute} from './execute.js';
 import {nextTick} from './utils/nextTick.js';
 

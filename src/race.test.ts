@@ -1,4 +1,4 @@
-import defer = require('defer-promise');
+import defer from 'defer-promise';
 import {AbortError} from './AbortError.js';
 import {race} from './race.js';
 import {nextTick} from './utils/nextTick.js';
