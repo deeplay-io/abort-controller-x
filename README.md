@@ -431,7 +431,7 @@ Retry a function with exponential backoff.
 
   Maximum delay between attempts in milliseconds.
 
-  Defaults to 15 seconds.
+  Defaults to 30 seconds.
 
   Example: if `baseMs` is 1000 and `maxDelayMs` is 3000, then retries will be
   attempted in 1000ms, 2000ms, 3000ms, 3000ms etc (not counting jitter).
