@@ -14,17 +14,20 @@
   ],
   "repository": "deeplay-io/abort-controller-x",
   "sideEffects": false,
-  "type": "module",
-  "exports": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "lib/index.d.ts",
   "files": [
     "src",
-    "lib"
+    "lib",
+    "es"
   ],
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib es",
     "test": "jest",
-    "build": "tsc -P tsconfig.build.json",
+    "build:lib": "tsc -P tsconfig.build.json",
+    "build:es": "tsc -P tsconfig.es.json",
+    "build": "npm run build:lib && npm run build:es",
     "prepublishOnly": "npm test && npm run clean && npm run build"
   },
   "author": "Daniel Lytkin <aikoven@deeplay.io>",

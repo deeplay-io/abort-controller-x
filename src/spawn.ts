@@ -1,4 +1,4 @@
-import {AbortError, catchAbortError, isAbortError} from './AbortError.js';
+import {AbortError, catchAbortError, isAbortError} from './AbortError';
 
 export type SpawnEffects = {
   /**

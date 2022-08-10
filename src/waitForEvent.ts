@@ -1,4 +1,4 @@
-import {execute} from './execute.js';
+import {execute} from './execute';
 
 export type EventTargetLike<T> =
   | EventTargetLike.HasEventTargetAddRemove<T>

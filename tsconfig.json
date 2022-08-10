@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "es2020",
     "lib": ["es2020", "dom"],
-    "module": "Node16",
-    "moduleResolution": "Node16",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "lib",
     "sourceMap": true,
     "declaration": true,
@@ -12,5 +12,6 @@
     "noUnusedLocals": true,
     "esModuleInterop": true
   },
-  "include": ["src"]
+  "files": ["src/index.ts"],
+  "include": ["src/**/*.test.ts"]
 }

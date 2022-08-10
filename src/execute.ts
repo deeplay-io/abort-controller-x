@@ -1,4 +1,4 @@
-import {AbortError} from './AbortError.js';
+import {AbortError} from './AbortError';
 
 /**
  * Similar to `new Promise(executor)`, but allows executor to return abort

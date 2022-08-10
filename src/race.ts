@@ -1,4 +1,4 @@
-import {AbortError, isAbortError} from './AbortError.js';
+import {AbortError, isAbortError} from './AbortError';
 
 /**
  * Abortable version of `Promise.race`.

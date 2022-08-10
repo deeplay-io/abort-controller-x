@@ -1,5 +1,5 @@
-import {abortable} from './abortable.js';
-import {nextTick} from './utils/nextTick.js';
+import {abortable} from './abortable';
+import {nextTick} from './utils/nextTick';
 
 test('abortable endless promise', async () => {
   const abortController = new AbortController();

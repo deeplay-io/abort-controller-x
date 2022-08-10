@@ -1,6 +1,6 @@
 import defer from 'defer-promise';
-import {execute} from './execute.js';
-import {nextTick} from './utils/nextTick.js';
+import {execute} from './execute';
+import {nextTick} from './utils/nextTick';
 
 test('resolve immediately', async () => {
   const abortController = new AbortController();

@@ -1,5 +1,5 @@
-import {forever} from './forever.js';
-import {nextTick} from './utils/nextTick.js';
+import {forever} from './forever';
+import {nextTick} from './utils/nextTick';
 
 test('forever', async () => {
   const abortController = new AbortController();
