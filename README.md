@@ -35,9 +35,11 @@ yarn add abort-controller-x
 See
 [`AbortController` MDN page](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).
 AbortController is
-[available in NodeJS](https://nodejs.org/api/globals.html#class-abortcontroller),
-a [polyfill](https://www.npmjs.com/package/abort-controller) is available for
-older versions.
+[available in NodeJS](https://nodejs.org/api/globals.html#class-abortcontroller)
+since 15.0.0, NodeJS 14.17+ requires the
+[--experimental-abortcontroller](https://nodejs.org/docs/latest-v14.x/api/cli.html#cli_experimental_abortcontroller)
+flag. A [polyfill](https://www.npmjs.com/package/abort-controller) is available
+for older NodeJS versions and browsers.
 
 ## Abortable Functions
 
