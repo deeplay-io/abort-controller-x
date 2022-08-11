@@ -8,7 +8,12 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 16.x, 18.x ]
+        environment:
+          - node-version: '14.17'
+            node-options: --experimental-abortcontroller
+          - node-version: 16.x
+          - node-version: 18.x
+
 
     steps:
       - uses: actions/checkout@v2
@@ -24,11 +29,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.environment.node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.environment.node-version }}
 
       - run: yarn install --frozen-lockfile
 
-      - run: yarn test
+      - env:
+          NODE_OPTIONS: ${{ matrix.environment.node-options }}
+        run: yarn test
