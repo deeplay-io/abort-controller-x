@@ -21,7 +21,7 @@ export class AbortError extends Error {
 /**
  * Checks whether given `error` is an `AbortError`.
  */
-export function isAbortError(error: unknown): boolean {
+export function isAbortError(error: unknown): error is Error {
   return (
     typeof error === 'object' &&
     error !== null &&
