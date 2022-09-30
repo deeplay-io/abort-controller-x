@@ -22,7 +22,11 @@ export class AbortError extends Error {
  * Checks whether given `error` is an `AbortError`.
  */
 export function isAbortError(error: unknown): error is AbortError {
-  return error instanceof AbortError;
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as any).name === 'AbortError'
+  );
 }
 
 /**
