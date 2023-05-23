@@ -1,4 +1,4 @@
-import {execute} from './execute';
+import { execute } from './execute';
 
 export type EventTargetLike<T> =
   | EventTargetLike.HasEventTargetAddRemove<T>
@@ -28,7 +28,7 @@ export type EventTargetLike<T> =
 export function waitForEvent<T>(
   signal: AbortSignal,
   target: EventTargetLike<T>,
-  eventName: string,
+  eventName: string | symbol,
   options?: EventTargetLike.EventListenerOptions,
 ): Promise<T> {
   return execute<T>(signal, resolve => {
@@ -87,23 +87,23 @@ export namespace EventTargetLike {
   // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/847731ba1d7fa6db6b911c0e43aa0afe596e7723/types/jquery/misc.d.ts#L6395
   export interface JQueryStyleEventEmitter<TContext, T> {
     on: (
-      eventName: string,
+      eventName: string | symbol,
       handler: (this: TContext, t: T, ...args: any[]) => any,
     ) => void;
     off: (
-      eventName: string,
+      eventName: string | symbol,
       handler: (this: TContext, t: T, ...args: any[]) => any,
     ) => void;
   }
 
   export interface HasEventTargetAddRemove<E> {
     addEventListener(
-      type: string,
+      type: string | symbol,
       listener: ((evt: E) => void) | null,
       options?: boolean | AddEventListenerOptions,
     ): void;
     removeEventListener(
-      type: string,
+      type: string | symbol,
       listener: ((evt: E) => void) | null,
       options?: EventListenerOptions | boolean,
     ): void;
@@ -123,7 +123,7 @@ export namespace EventTargetLike {
 
 function listen<T>(
   target: EventTargetLike<T>,
-  eventName: string,
+  eventName: string | symbol,
   handler: (...args: any[]) => void,
   options?: EventTargetLike.EventListenerOptions,
 ) {
