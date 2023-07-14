@@ -490,7 +490,7 @@ which case all the other calls will be aborted.
 
 - `ProactiveRetryOptions.baseMs`
 
-  Starting delay before first retry attempt in milliseconds.
+  Base delay between attempts in milliseconds.
 
   Defaults to 1000.
 
