@@ -15,6 +15,7 @@ Abortable async function primitives and combinators.
   - [`forever`](#forever)
   - [`spawn`](#spawn)
   - [`retry`](#retry)
+  - [`proactiveRetry`](#proactive-retry)
   - [`execute`](#execute)
   - [`abortable`](#abortable)
   - [`run`](#run)
@@ -447,6 +448,64 @@ Retry a function with exponential backoff.
 - `RetryOptions.onError`
 
   Called after each failed attempt before setting delay timer.
+
+  Rethrow error from this callback to prevent further retries.
+
+### `proactiveRetry`
+
+```ts
+function proactiveRetry<T>(
+  signal: AbortSignal,
+  fn: (signal: AbortSignal, attempt: number) => Promise<T>,
+  options?: ProactiveRetryOptions,
+): Promise<T>;
+
+type ProactiveRetryOptions = {
+  baseMs?: number;
+  maxAttempts?: number;
+  onError?: (error: unknown, attempt: number) => void;
+};
+```
+
+Proactively retry a function with exponential backoff.
+
+Also known as hedging.
+
+The function will be called multiple times in parallel until it succeeds, in
+which case all the other calls will be aborted.
+
+- `fn`
+
+  A function that will be called multiple times in parallel until it succeeds.
+  It receives:
+
+  - `signal`
+
+    `AbortSignal` that is aborted when the signal passed to `retry` is aborted,
+    or when the function succeeds.
+
+  - `attempt`
+
+    Attempt number starting with 0.
+
+- `ProactiveRetryOptions.baseMs`
+
+  Base delay between attempts in milliseconds.
+
+  Defaults to 1000.
+
+  Example: if `baseMs` is 100, then retries will be attempted in 100ms, 200ms,
+  400ms etc (not counting jitter).
+
+- `ProactiveRetryOptions.maxAttempts`
+
+  Maximum for the total number of attempts.
+
+  Defaults to `Infinity`.
+
+- `ProactiveRetryOptions.onError`
+
+  Called after each failed attempt.
 
   Rethrow error from this callback to prevent further retries.
 
