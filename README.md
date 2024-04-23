@@ -101,6 +101,8 @@ functions.
 
 - [`abort-controller-x-rxjs`](https://github.com/deeplay-io/abort-controller-x-rxjs)
   — Abortable helpers for RxJS.
+- [`abort-controller-x-reactive-store`](https://github.com/deeplay-io/abort-controller-x-reactive-store)
+  — Reactive store primitive and helpers.
 
 ## API
 
