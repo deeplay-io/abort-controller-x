@@ -6,7 +6,7 @@
  */
 export class AbortError implements Error {
   name: 'AbortError' = 'AbortError';
-  stack?: string;
+  stack: string = '';
 
   constructor(
     public message = 'The operation has been aborted',

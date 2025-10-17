@@ -2,7 +2,7 @@ import defer from 'defer-promise';
 import expect from 'expect';
 import {AbortError} from './AbortError';
 import {race} from './race';
-import {spyOn} from './testUtils/spy';
+import {createSpy, spyOn} from './testUtils/spy';
 import {nextTick} from './utils/nextTick';
 
 it('external abort', async () => {
@@ -197,7 +197,7 @@ it('reject during cleanup', async () => {
   expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('abort with custom reason', async () => {
+it('abort with custom reason', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -228,21 +228,21 @@ test('abort with custom reason', async () => {
   });
 });
 
-test('abort before race with custom reason', async () => {
+it('abort before race with custom reason', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
   const customReason = new Error('Custom abort reason');
   abortController.abort(customReason);
 
-  const executor = jest.fn((signal: AbortSignal) => [Promise.resolve('test')]);
+  const executor = createSpy((signal: AbortSignal) => [Promise.resolve('test')]);
 
   await expect(race(signal, executor)).rejects.toBe(customReason);
 
-  expect(executor).not.toHaveBeenCalled();
+  expect(executor.callCount).toBe(0);
 });
 
-test('innerSignal receives custom reason on external abort', async () => {
+it('innerSignal receives custom reason on external abort', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -263,7 +263,7 @@ test('innerSignal receives custom reason on external abort', async () => {
   expect(innerSignal!.reason).toBe(customReason);
 });
 
-test('innerSignal receives descriptive reason on promise settlement', async () => {
+it('innerSignal receives descriptive reason on promise settlement', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 

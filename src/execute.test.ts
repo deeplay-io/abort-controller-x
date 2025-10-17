@@ -34,7 +34,7 @@ it('resolve immediately', async () => {
 
 it('resolve before abort', async () => {
   const abortController = new AbortController();
-  const signal = abortController.signal;  
+  const signal = abortController.signal;
   const addEventListenerSpy = spyOn(signal, 'addEventListener');
   const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
@@ -320,12 +320,12 @@ it('async abort callback rejection', async () => {
   expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('abort with custom reason', async () => {
+it('abort with custom reason', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
   const customReason = new Error('Custom abort reason');
-  const callback = jest.fn((reason?: unknown) => {
+  const callback = createSpy((reason?: unknown) => {
     expect(reason).toBe(customReason);
   });
 
@@ -346,21 +346,21 @@ test('abort with custom reason', async () => {
 
   await nextTick();
 
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback.callCount).toBe(1);
   expect(result).toMatchObject({
     status: 'rejected',
     reason: customReason,
   });
 });
 
-test('abort before execute with custom reason', async () => {
+it('abort before execute with custom reason', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
   const customReason = new Error('Custom abort reason');
   abortController.abort(customReason);
 
-  const executor = jest.fn(
+  const executor = createSpy(
     (
       resolve: (value: string) => void,
       reject: (reason?: any) => void,
@@ -371,17 +371,17 @@ test('abort before execute with custom reason', async () => {
 
   await expect(execute(signal, executor)).rejects.toBe(customReason);
 
-  expect(executor).not.toHaveBeenCalled();
+  expect(executor.callCount).toBe(0);
 });
 
-test('async abort callback with custom reason', async () => {
+it('async abort callback with custom reason', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
   const customReason = new Error('Custom abort reason');
   const callbackDeferred = defer<void>();
 
-  const callback = jest.fn((reason?: unknown) => {
+  const callback = createSpy((reason?: unknown) => {
     expect(reason).toBe(customReason);
     return callbackDeferred.promise;
   });
@@ -413,5 +413,5 @@ test('async abort callback with custom reason', async () => {
     status: 'rejected',
     reason: customReason,
   });
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback.callCount).toBe(1);
 });

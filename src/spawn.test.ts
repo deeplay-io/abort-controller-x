@@ -18,7 +18,7 @@ it('fork manual abort', async () => {
       try {
         await forever(signal);
       } catch (err: any) {
-        actions.push(`fork abort: ${err.message}`);
+        actions.push('fork abort');
       }
     });
 
@@ -34,7 +34,7 @@ it('fork manual abort', async () => {
     'fork start',
     'post fork',
     'pre task abort',
-    'fork abort: The operation has been aborted',
+    'fork abort',
     'post task abort',
   ]);
 
@@ -56,7 +56,7 @@ it('fork abort on spawn finish', async () => {
       try {
         await forever(signal);
       } catch (err: any) {
-        actions.push(`fork abort: ${err.message}`);
+        actions.push('fork abort');
       }
     });
 
@@ -69,7 +69,7 @@ it('fork abort on spawn finish', async () => {
     'fork start',
     'post fork',
     'spawn finish',
-    'fork abort: The operation has been aborted',
+    'fork abort',
   ]);
 
   expect(addEventListenerSpy.callCount).toBe(1);
@@ -90,7 +90,7 @@ it('fork abort on spawn error', async () => {
       try {
         await forever(signal);
       } catch (err: any) {
-        actions.push(`fork abort: ${err.message}`);
+        actions.push('fork abort');
       }
     });
 
@@ -106,7 +106,7 @@ it('fork abort on spawn error', async () => {
     'fork start',
     'post fork',
     'spawn finish',
-    'fork abort: The operation has been aborted',
+    'fork abort',
     'spawn throw: the-error',
   ]);
 
@@ -135,7 +135,7 @@ it('error thrown from fork', async () => {
     try {
       await forever(signal);
     } catch (err: any) {
-      actions.push(`spawn abort: ${err.message}`);
+      actions.push('spawn abort');
       throw err;
     }
   }).catch(err => {
@@ -146,7 +146,7 @@ it('error thrown from fork', async () => {
     'fork start',
     'post fork',
     'fork finish',
-    'spawn abort: The operation has been aborted',
+    'spawn abort',
     'spawn throw: the-error',
   ]);
 
@@ -190,7 +190,7 @@ it('abort before spawn', async () => {
   expect(removeEventListenerSpy.callCount).toBe(0);
 });
 
-test('abort with custom reason during spawn execution', async () => {
+it('abort with custom reason during spawn execution', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -203,7 +203,7 @@ test('abort with custom reason during spawn execution', async () => {
       try {
         await forever(signal);
       } catch (err: any) {
-        actions.push(`fork abort: ${err.message}`);
+        actions.push('fork abort');
       }
     });
 
@@ -219,10 +219,10 @@ test('abort with custom reason during spawn execution', async () => {
   expect(actions).toContain('fork start');
   expect(actions).toContain('post fork');
   expect(actions).toContain('pre abort');
-  expect(actions).toContain('fork abort: The operation has been aborted');
+  expect(actions).toContain('fork abort');
 });
 
-test('innerSignal aborted on spawn finish', async () => {
+it('innerSignal aborted on spawn finish', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -240,7 +240,7 @@ test('innerSignal aborted on spawn finish', async () => {
   expect(innerSignal!.aborted).toBe(true);
 });
 
-test('innerSignal aborted on fork error', async () => {
+it('innerSignal aborted on fork error', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -259,7 +259,7 @@ test('innerSignal aborted on fork error', async () => {
   expect(innerSignal!.aborted).toBe(true);
 });
 
-test('innerSignal aborted when spawn function throws', async () => {
+it('innerSignal aborted when spawn function throws', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 

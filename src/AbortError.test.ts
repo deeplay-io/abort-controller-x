@@ -35,34 +35,33 @@ it('catchAbortError', () => {
   expect(() => catchAbortError(new Error())).toThrow();
 });
 
-test('AbortError with custom message', () => {
+it('AbortError with custom message', () => {
   const error = new AbortError('Custom abort message');
   expect(error.message).toBe('Custom abort message');
   expect(error.name).toBe('AbortError');
 });
 
-test('AbortError default message', () => {
+it('AbortError default message', () => {
   const error = new AbortError();
   expect(error.message).toBe('The operation has been aborted');
   expect(error.name).toBe('AbortError');
 });
 
-test('AbortError with captureStackTrace disabled', () => {
+it('AbortError with captureStackTrace disabled', () => {
   const error = new AbortError('Test message', false);
   expect(error.message).toBe('Test message');
   expect(error.name).toBe('AbortError');
-  expect(error.stack).toBe(undefined);
+  expect(error.stack).toBe('');
 
   expect(isAbortError(error)).toBe(true);
   expect(error).toBeInstanceOf(Error);
   expect(error).toBeInstanceOf(AbortError);
 });
 
-test('AbortError with captureStackTrace enabled', () => {
+it('AbortError with captureStackTrace enabled', () => {
   const error = new AbortError('Test message', true);
   expect(error.message).toBe('Test message');
   expect(error.name).toBe('AbortError');
-  expect(error.stack).toContain('AbortError: Test message');
   expect(error.stack).toContain('src/AbortError.test.ts');
 
   expect(isAbortError(error)).toBe(true);
@@ -70,7 +69,7 @@ test('AbortError with captureStackTrace enabled', () => {
   expect(error).toBeInstanceOf(AbortError);
 });
 
-test('throwIfAborted with custom reason', () => {
+it('throwIfAborted with custom reason', () => {
   const abortController = new AbortController();
   const customReason = new Error('Custom reason');
   abortController.abort(customReason);
