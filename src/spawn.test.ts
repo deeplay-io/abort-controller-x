@@ -1,12 +1,14 @@
+import expect from 'expect';
 import {spawn} from './spawn';
+import {createSpy, spyOn} from './testUtils/spy';
 import {forever} from './forever';
 import {delay} from './delay';
 
-test('fork manual abort', async () => {
+it('fork manual abort', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const actions: string[] = [];
 
@@ -28,25 +30,23 @@ test('fork manual abort', async () => {
     actions.push('post task abort');
   });
 
-  expect(actions).toMatchInlineSnapshot(`
-    Array [
-      "fork start",
-      "post fork",
-      "pre task abort",
-      "fork abort: The operation has been aborted",
-      "post task abort",
-    ]
-  `);
+  expect(actions).toEqual([
+    'fork start',
+    'post fork',
+    'pre task abort',
+    'fork abort: The operation has been aborted',
+    'post task abort',
+  ]);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('fork abort on spawn finish', async () => {
+it('fork abort on spawn finish', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const actions: string[] = [];
 
@@ -65,24 +65,22 @@ test('fork abort on spawn finish', async () => {
     actions.push('spawn finish');
   });
 
-  expect(actions).toMatchInlineSnapshot(`
-    Array [
-      "fork start",
-      "post fork",
-      "spawn finish",
-      "fork abort: The operation has been aborted",
-    ]
-  `);
+  expect(actions).toEqual([
+    'fork start',
+    'post fork',
+    'spawn finish',
+    'fork abort: The operation has been aborted',
+  ]);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('fork abort on spawn error', async () => {
+it('fork abort on spawn error', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const actions: string[] = [];
 
@@ -104,25 +102,23 @@ test('fork abort on spawn error', async () => {
     actions.push(`spawn throw: ${err.message}`);
   });
 
-  expect(actions).toMatchInlineSnapshot(`
-    Array [
-      "fork start",
-      "post fork",
-      "spawn finish",
-      "fork abort: The operation has been aborted",
-      "spawn throw: the-error",
-    ]
-  `);
+  expect(actions).toEqual([
+    'fork start',
+    'post fork',
+    'spawn finish',
+    'fork abort: The operation has been aborted',
+    'spawn throw: the-error',
+  ]);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('error thrown from fork', async () => {
+it('error thrown from fork', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const actions: string[] = [];
 
@@ -146,25 +142,23 @@ test('error thrown from fork', async () => {
     actions.push(`spawn throw: ${err.message}`);
   });
 
-  expect(actions).toMatchInlineSnapshot(`
-    Array [
-      "fork start",
-      "post fork",
-      "fork finish",
-      "spawn abort: The operation has been aborted",
-      "spawn throw: the-error",
-    ]
-  `);
+  expect(actions).toEqual([
+    'fork start',
+    'post fork',
+    'fork finish',
+    'spawn abort: The operation has been aborted',
+    'spawn throw: the-error',
+  ]);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('async defer', async () => {
+it('async defer', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
-  const deferredFn = jest.fn();
+  const deferredFn = createSpy(() => {});
 
   await spawn(signal, async (signal, {defer}) => {
     await delay(signal, 0);
@@ -174,24 +168,24 @@ test('async defer', async () => {
     });
   });
 
-  expect(deferredFn).toHaveBeenCalledTimes(1);
+  expect(deferredFn.callCount).toBe(1);
 });
 
-test('abort before spawn', async () => {
+it('abort before spawn', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
   abortController.abort();
 
-  const executor = jest.fn(async (signal: AbortSignal) => {});
+  const executor = createSpy(async (signal: AbortSignal) => {});
 
   await expect(spawn(signal, executor)).rejects.toMatchObject({
     name: 'AbortError',
   });
 
-  expect(executor).not.toHaveBeenCalled();
+  expect(executor.callCount).toBe(0);
 
-  expect(signal.addEventListener).not.toHaveBeenCalled();
-  expect(signal.removeEventListener).not.toHaveBeenCalled();
+  expect(addEventListenerSpy.callCount).toBe(0);
+  expect(removeEventListenerSpy.callCount).toBe(0);
 });

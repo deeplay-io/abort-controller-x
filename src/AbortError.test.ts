@@ -1,3 +1,4 @@
+import expect from 'expect';
 import {
   AbortError,
   catchAbortError,
@@ -6,7 +7,7 @@ import {
   throwIfAborted,
 } from './AbortError';
 
-test('isAbortError', () => {
+it('isAbortError', () => {
   expect(isAbortError({})).toBe(false);
   expect(isAbortError(undefined)).toBe(false);
   expect(isAbortError(null)).toBe(false);
@@ -14,7 +15,7 @@ test('isAbortError', () => {
   expect(isAbortError(new AbortError())).toBe(true);
 });
 
-test('throwIfAborted', () => {
+it('throwIfAborted', () => {
   const abortController = new AbortController();
 
   expect(() => throwIfAborted(abortController.signal)).not.toThrow();
@@ -24,12 +25,12 @@ test('throwIfAborted', () => {
   expect(() => throwIfAborted(abortController.signal)).toThrow(AbortError);
 });
 
-test('rethrowAbortError', () => {
+it('rethrowAbortError', () => {
   expect(() => rethrowAbortError(new AbortError())).toThrow(AbortError);
   expect(() => rethrowAbortError(new Error())).not.toThrow();
 });
 
-test('catchAbortError', () => {
+it('catchAbortError', () => {
   expect(() => catchAbortError(new AbortError())).not.toThrow();
   expect(() => catchAbortError(new Error())).toThrow();
 });

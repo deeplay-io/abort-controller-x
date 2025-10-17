@@ -1,11 +1,13 @@
+import expect from 'expect';
 import {abortable} from './abortable';
+import {spyOn} from './testUtils/spy';
 import {nextTick} from './utils/nextTick';
 
-test('abortable endless promise', async () => {
+it('abortable endless promise', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   let result: PromiseSettledResult<void> | undefined;
 
@@ -34,15 +36,15 @@ test('abortable endless promise', async () => {
     reason: {name: 'AbortError'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('abort before reject', async () => {
+it('abort before reject', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   abortController.abort();
 
@@ -69,6 +71,6 @@ test('abort before reject', async () => {
     reason: {name: 'AbortError'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(0);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(0);
+  expect(addEventListenerSpy.callCount).toBe(0);
+  expect(removeEventListenerSpy.callCount).toBe(0);
 });

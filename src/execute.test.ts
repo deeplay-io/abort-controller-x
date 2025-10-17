@@ -1,14 +1,16 @@
 import defer from 'defer-promise';
+import expect from 'expect';
 import {execute} from './execute';
+import {createSpy, spyOn} from './testUtils/spy';
 import {nextTick} from './utils/nextTick';
 
-test('resolve immediately', async () => {
+it('resolve immediately', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
-  const callback = jest.fn(() => {});
+  const callback = createSpy(() => {});
 
   await expect(
     execute<string>(signal, (resolve, reject) => {
@@ -18,27 +20,27 @@ test('resolve immediately', async () => {
     }),
   ).resolves.toEqual('test');
 
-  expect(callback).not.toHaveBeenCalled();
+  expect(callback.callCount).toBe(0);
 
   abortController.abort();
 
   await nextTick();
 
-  expect(callback).not.toHaveBeenCalled();
+  expect(callback.callCount).toBe(0);
 
-  expect(signal.addEventListener).not.toHaveBeenCalled();
-  expect(signal.removeEventListener).not.toHaveBeenCalled();
+  expect(addEventListenerSpy.callCount).toBe(0);
+  expect(removeEventListenerSpy.callCount).toBe(0);
 });
 
-test('resolve before abort', async () => {
+it('resolve before abort', async () => {
   const abortController = new AbortController();
-  const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const signal = abortController.signal;  
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   let resolve: (value: string) => void;
 
-  const callback = jest.fn(() => {});
+  const callback = createSpy(() => {});
 
   let result: PromiseSettledResult<string> | undefined;
 
@@ -61,22 +63,22 @@ test('resolve before abort', async () => {
 
   await nextTick();
 
-  expect(callback).not.toHaveBeenCalled();
+  expect(callback.callCount).toBe(0);
   expect(result).toEqual({status: 'fulfilled', value: 'test'});
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('abort before resolve', async () => {
+it('abort before resolve', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   let resolve: (value: string) => void;
 
-  const callback = jest.fn(() => {});
+  const callback = createSpy(() => {});
 
   let result: PromiseSettledResult<string> | undefined;
 
@@ -98,24 +100,24 @@ test('abort before resolve', async () => {
 
   await nextTick();
 
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback.callCount).toBe(1);
   expect(result).toMatchObject({
     status: 'rejected',
     reason: {name: 'AbortError'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('abort before execute', async () => {
+it('abort before execute', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
   abortController.abort();
 
-  const executor = jest.fn(
+  const executor = createSpy(
     (
       resolve: (value: string) => void,
       reject: (reason?: any) => void,
@@ -128,19 +130,19 @@ test('abort before execute', async () => {
     name: 'AbortError',
   });
 
-  expect(executor).not.toHaveBeenCalled();
+  expect(executor.callCount).toBe(0);
 
-  expect(signal.addEventListener).not.toHaveBeenCalled();
-  expect(signal.removeEventListener).not.toHaveBeenCalled();
+  expect(addEventListenerSpy.callCount).toBe(0);
+  expect(removeEventListenerSpy.callCount).toBe(0);
 });
 
-test('reject immediately', async () => {
+it('reject immediately', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
-  const callback = jest.fn(() => {});
+  const callback = createSpy(() => {});
 
   await expect(
     execute<string>(signal, (resolve, reject) => {
@@ -150,27 +152,27 @@ test('reject immediately', async () => {
     }),
   ).rejects.toEqual('test');
 
-  expect(callback).not.toHaveBeenCalled();
+  expect(callback.callCount).toBe(0);
 
   abortController.abort();
 
   await nextTick();
 
-  expect(callback).not.toHaveBeenCalled();
+  expect(callback.callCount).toBe(0);
 
-  expect(signal.addEventListener).not.toHaveBeenCalled();
-  expect(signal.removeEventListener).not.toHaveBeenCalled();
+  expect(addEventListenerSpy.callCount).toBe(0);
+  expect(removeEventListenerSpy.callCount).toBe(0);
 });
 
-test('reject before abort', async () => {
+it('reject before abort', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   let reject: (value: string) => void;
 
-  const callback = jest.fn(() => {});
+  const callback = createSpy(() => {});
 
   let result: PromiseSettledResult<string> | undefined;
 
@@ -193,22 +195,22 @@ test('reject before abort', async () => {
 
   await nextTick();
 
-  expect(callback).not.toHaveBeenCalled();
+  expect(callback.callCount).toBe(0);
   expect(result).toEqual({status: 'rejected', reason: 'test'});
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('abort before reject', async () => {
+it('abort before reject', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   let reject: (value: string) => void;
 
-  const callback = jest.fn(() => {});
+  const callback = createSpy(() => {});
 
   let result: PromiseSettledResult<string> | undefined;
 
@@ -230,25 +232,25 @@ test('abort before reject', async () => {
 
   await nextTick();
 
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback.callCount).toBe(1);
   expect(result).toMatchObject({
     status: 'rejected',
     reason: {name: 'AbortError'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('async abort callback', async () => {
+it('async abort callback', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const callbackDeferred = defer<void>();
 
-  const callback = jest.fn(() => callbackDeferred.promise);
+  const callback = createSpy(() => callbackDeferred.promise);
 
   let result: PromiseSettledResult<string> | undefined;
 
@@ -277,19 +279,19 @@ test('async abort callback', async () => {
     status: 'rejected',
     reason: {name: 'AbortError'},
   });
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback.callCount).toBe(1);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('async abort callback rejection', async () => {
+it('async abort callback rejection', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
-  const callback = jest.fn(() => Promise.reject('test'));
+  const callback = createSpy(() => Promise.reject('test'));
 
   let result: PromiseSettledResult<string> | undefined;
 
@@ -312,8 +314,8 @@ test('async abort callback rejection', async () => {
     status: 'rejected',
     reason: 'test',
   });
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback.callCount).toBe(1);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });

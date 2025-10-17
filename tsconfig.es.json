@@ -5,6 +5,7 @@
     "outDir": "es"
   },
   "exclude": [
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/testUtils/**"
   ]
 }

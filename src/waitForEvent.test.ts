@@ -1,14 +1,16 @@
+import expect from 'expect';
+import {spyOn} from './testUtils/spy';
 import {nextTick} from './utils/nextTick';
 import {waitForEvent} from './waitForEvent';
 
-test('external abort', async () => {
+it('external abort', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const eventTarget = new AbortController().signal;
-  eventTarget.removeEventListener = jest.fn(eventTarget.removeEventListener);
+  const eventRemoveListenerSpy = spyOn(eventTarget, 'removeEventListener');
 
   let result: PromiseSettledResult<any> | undefined;
 
@@ -21,7 +23,7 @@ test('external abort', async () => {
     },
   );
 
-  expect(eventTarget.removeEventListener).toHaveBeenCalledTimes(0);
+  expect(eventRemoveListenerSpy.callCount).toBe(0);
 
   abortController.abort();
 
@@ -31,21 +33,21 @@ test('external abort', async () => {
     status: 'rejected',
     reason: {name: 'AbortError'},
   });
-  expect(eventTarget.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(eventRemoveListenerSpy.callCount).toBe(1);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('fulfill', async () => {
+it('fulfill', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const eventTargetController = new AbortController();
   const eventTarget = eventTargetController.signal;
-  eventTarget.removeEventListener = jest.fn(eventTarget.removeEventListener);
+  const eventRemoveListenerSpy = spyOn(eventTarget, 'removeEventListener');
 
   let result: PromiseSettledResult<any> | undefined;
 
@@ -66,8 +68,8 @@ test('fulfill', async () => {
     status: 'fulfilled',
     value: {type: 'abort'},
   });
-  expect(eventTarget.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(eventRemoveListenerSpy.callCount).toBe(1);
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });

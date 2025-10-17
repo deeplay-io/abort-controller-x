@@ -1,13 +1,15 @@
 import defer from 'defer-promise';
+import expect from 'expect';
 import {AbortError} from './AbortError';
 import {race} from './race';
+import {spyOn} from './testUtils/spy';
 import {nextTick} from './utils/nextTick';
 
-test('external abort', async () => {
+it('external abort', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const deferred1 = defer<string>();
   const deferred2 = defer<number>();
@@ -48,15 +50,15 @@ test('external abort', async () => {
     reason: {name: 'AbortError'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('fulfill', async () => {
+it('fulfill', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const deferred1 = defer<string>();
   const deferred2 = defer<number>();
@@ -95,15 +97,15 @@ test('fulfill', async () => {
     value: 'test',
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('reject', async () => {
+it('reject', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const deferred1 = defer<string>();
   const deferred2 = defer<number>();
@@ -142,15 +144,15 @@ test('reject', async () => {
     reason: 'test',
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
 
-test('reject during cleanup', async () => {
+it('reject during cleanup', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   const deferred1 = defer<string>();
   const deferred2 = defer<number>();
@@ -191,6 +193,6 @@ test('reject during cleanup', async () => {
     reason: {message: 'test'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });
