@@ -5,3 +5,5 @@ yarn-error.log
 .idea
 .direnv
 .envrc
+
+*.log

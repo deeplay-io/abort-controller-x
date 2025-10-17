@@ -1,11 +1,13 @@
+import expect from 'expect';
 import {forever} from './forever';
+import {spyOn} from './testUtils/spy';
 import {nextTick} from './utils/nextTick';
 
-test('forever', async () => {
+it('forever', async () => {
   const abortController = new AbortController();
   const signal = abortController.signal;
-  signal.addEventListener = jest.fn(signal.addEventListener);
-  signal.removeEventListener = jest.fn(signal.removeEventListener);
+  const addEventListenerSpy = spyOn(signal, 'addEventListener');
+  const removeEventListenerSpy = spyOn(signal, 'removeEventListener');
 
   let result: PromiseSettledResult<string | number> | undefined;
 
@@ -31,6 +33,6 @@ test('forever', async () => {
     reason: {name: 'AbortError'},
   });
 
-  expect(signal.addEventListener).toHaveBeenCalledTimes(1);
-  expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
+  expect(addEventListenerSpy.callCount).toBe(1);
+  expect(removeEventListenerSpy.callCount).toBe(1);
 });

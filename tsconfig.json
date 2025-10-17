@@ -10,8 +10,8 @@
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node", "mocha"]
   },
-  "files": ["src/index.ts"],
-  "include": ["src/**/*.test.ts"]
+  "include": ["src/**/*.ts"]
 }
