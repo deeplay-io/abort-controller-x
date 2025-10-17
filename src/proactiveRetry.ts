@@ -1,4 +1,4 @@
-import {isAbortError, catchAbortError} from './AbortError';
+import {isAbortError, catchAbortError, AbortError} from './AbortError';
 import {delay} from './delay';
 import {execute} from './execute';
 
@@ -48,7 +48,9 @@ export function proactiveRetry<T>(
     const promises = new Map</* attempt */ number, Promise<T>>();
 
     function handleFulfilled(value: T) {
-      innerAbortController.abort();
+      innerAbortController.abort(
+        new AbortError('One of the proactiveRetry() attempts fulfilled', false),
+      );
       promises.clear();
 
       resolve(value);
@@ -71,7 +73,12 @@ export function proactiveRetry<T>(
         try {
           onError(err, attempt);
         } catch (err) {
-          innerAbortController.abort();
+          innerAbortController.abort(
+            new AbortError(
+              'Error was thrown from proactiveRetry() onError callback',
+              false,
+            ),
+          );
           promises.clear();
 
           reject(err);
@@ -103,8 +110,8 @@ export function proactiveRetry<T>(
 
     makeAttempts(innerAbortController.signal).catch(catchAbortError);
 
-    return () => {
-      innerAbortController.abort();
+    return reason => {
+      innerAbortController.abort(reason ?? new AbortError());
     };
   });
 }

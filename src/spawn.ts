@@ -83,9 +83,9 @@ export type ForkTask<T> = {
  *     // Once the function finishes or the signal is aborted, stop extending
  *     // the lock and release it.
  *     import Redlock = require('redlock');
- *     
- *     const lockTtl = 30_000;    
- * 
+ *
+ *     const lockTtl = 30_000;
+ *
  *     function withLock<T>(
  *       signal: AbortSignal,
  *       redlock: Redlock,
@@ -94,7 +94,7 @@ export type ForkTask<T> = {
  *     ): Promise<T> {
  *       return spawn(signal, async (signal, {fork, defer}) => {
  *         const lock = await redlock.lock(key, lockTtl);
- * 
+ *
  *         defer(() => lock.unlock());
  *     ​
  *         fork(async signal => {
@@ -103,15 +103,15 @@ export type ForkTask<T> = {
  *             await lock.extend(lockTtl);
  *           }
  *         });
- * 
+ *
  *         return await fn(signal);
  *       });
  *     }
- * 
+ *
  *     const redlock = new Redlock([redis], {
  *       retryCount: -1,
  *     });
- * 
+ *
  *     await withLock(signal, redlock, 'the-lock-key', async signal => {
  *       // ...
  *     });
@@ -134,12 +134,12 @@ export function spawn<T>(
   const spawnAbortController = new AbortController();
   const spawnSignal = spawnAbortController.signal;
 
-  const abortSpawn = () => {
-    spawnAbortController.abort();
+  const abortListener = () => {
+    spawnAbortController.abort(signal.reason ?? new AbortError());
   };
-  signal.addEventListener('abort', abortSpawn);
+  signal.addEventListener('abort', abortListener);
   const removeAbortListener = () => {
-    signal.removeEventListener('abort', abortSpawn);
+    signal.removeEventListener('abort', abortListener);
   };
 
   const tasks = new Set<ForkTask<unknown>>();
@@ -170,11 +170,17 @@ export function spawn<T>(
       .join()
       .then(
         value => {
-          spawnAbortController.abort();
+          spawnAbortController.abort(
+            new AbortError('spawn() function finished', false),
+          );
           result = {value};
         },
         error => {
-          spawnAbortController.abort();
+          spawnAbortController.abort(
+            isAbortError(error)
+              ? error
+              : new AbortError('spawn() function threw', false),
+          );
 
           if (!isAbortError(error) || failure == null) {
             failure = {error};
@@ -213,7 +219,9 @@ export function spawn<T>(
           failure = {error};
 
           // error in forked function
-          spawnAbortController.abort();
+          spawnAbortController.abort(
+            new AbortError('A function forked by spawn() threw', false),
+          );
         })
         .finally(() => {
           tasks.delete(task);

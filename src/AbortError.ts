@@ -4,17 +4,23 @@
  * **Warning**: do not use `instanceof` with this class. Instead, use
  * `isAbortError` function.
  */
-export class AbortError extends Error {
-  constructor() {
-    super('The operation has been aborted');
+export class AbortError implements Error {
+  name: 'AbortError' = 'AbortError';
+  stack?: string;
 
-    this.message = 'The operation has been aborted';
-
-    this.name = 'AbortError';
-
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, this.constructor);
+  constructor(
+    public message = 'The operation has been aborted',
+    captureStackTrace = true,
+  ) {
+    if (captureStackTrace) {
+      Error.captureStackTrace?.(this, this.constructor);
     }
+
+    Object.setPrototypeOf(this, Error.prototype);
+  }
+
+  static [Symbol.hasInstance](instance: unknown) {
+    return isAbortError(instance);
   }
 }
 

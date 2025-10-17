@@ -15,11 +15,11 @@ export function execute<T>(
   executor: (
     resolve: (value: T) => void,
     reject: (reason?: any) => void,
-  ) => () => void | PromiseLike<void>,
+  ) => (reason?: unknown) => void | PromiseLike<void>,
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     if (signal.aborted) {
-      reject(new AbortError());
+      reject(signal.reason ?? new AbortError());
       return;
     }
 
@@ -47,15 +47,15 @@ export function execute<T>(
     );
 
     if (!finished) {
-      const listener = () => {
-        const callbackResult = callback();
+      const abortListener = () => {
+        const callbackResult = callback(signal.reason);
 
         if (callbackResult == null) {
-          reject(new AbortError());
+          reject(signal.reason ?? new AbortError());
         } else {
           callbackResult.then(
             () => {
-              reject(new AbortError());
+              reject(signal.reason ?? new AbortError());
             },
             reason => {
               reject(reason);
@@ -66,10 +66,10 @@ export function execute<T>(
         finish();
       };
 
-      signal.addEventListener('abort', listener);
+      signal.addEventListener('abort', abortListener);
 
       removeAbortListener = () => {
-        signal.removeEventListener('abort', listener);
+        signal.removeEventListener('abort', abortListener);
       };
     }
   });

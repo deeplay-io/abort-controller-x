@@ -143,7 +143,7 @@ export function all<T>(
 ): Promise<T[]> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
-      reject(new AbortError());
+      reject(signal.reason ?? new AbortError());
       return;
     }
 
@@ -157,7 +157,7 @@ export function all<T>(
     }
 
     const abortListener = () => {
-      innerAbortController.abort();
+      innerAbortController.abort(signal.reason ?? new AbortError());
     };
 
     signal.addEventListener('abort', abortListener);
@@ -189,7 +189,12 @@ export function all<T>(
           settled();
         },
         reason => {
-          innerAbortController.abort();
+          innerAbortController.abort(
+            new AbortError(
+              'One of the promises passed to all() rejected',
+              false,
+            ),
+          );
 
           if (
             rejection == null ||

@@ -34,7 +34,7 @@ export function race<T extends PromiseLike<any>>(
 ): Promise<T extends PromiseLike<infer U> ? U : never> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
-      reject(new AbortError());
+      reject(signal.reason ?? new AbortError());
       return;
     }
 
@@ -43,7 +43,7 @@ export function race<T extends PromiseLike<any>>(
     const promises = executor(innerAbortController.signal);
 
     const abortListener = () => {
-      innerAbortController.abort();
+      innerAbortController.abort(signal.reason ?? new AbortError());
     };
 
     signal.addEventListener('abort', abortListener);
@@ -53,7 +53,9 @@ export function race<T extends PromiseLike<any>>(
     function settled(
       result: PromiseSettledResult<T extends PromiseLike<infer U> ? U : never>,
     ) {
-      innerAbortController.abort();
+      innerAbortController.abort(
+        new AbortError('One of the promises passed to race() settled', false),
+      );
 
       settledCount += 1;
 

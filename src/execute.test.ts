@@ -317,3 +317,99 @@ test('async abort callback rejection', async () => {
   expect(signal.addEventListener).toHaveBeenCalledTimes(1);
   expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
 });
+
+test('abort with custom reason', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const customReason = new Error('Custom abort reason');
+  const callback = jest.fn((reason?: unknown) => {
+    expect(reason).toBe(customReason);
+  });
+
+  let result: PromiseSettledResult<string> | undefined;
+
+  execute<string>(signal, (resolve, reject) => {
+    return callback;
+  }).then(
+    value => {
+      result = {status: 'fulfilled', value};
+    },
+    reason => {
+      result = {status: 'rejected', reason};
+    },
+  );
+
+  abortController.abort(customReason);
+
+  await nextTick();
+
+  expect(callback).toHaveBeenCalledTimes(1);
+  expect(result).toMatchObject({
+    status: 'rejected',
+    reason: customReason,
+  });
+});
+
+test('abort before execute with custom reason', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const customReason = new Error('Custom abort reason');
+  abortController.abort(customReason);
+
+  const executor = jest.fn(
+    (
+      resolve: (value: string) => void,
+      reject: (reason?: any) => void,
+    ): (() => void | PromiseLike<void>) => {
+      return () => {};
+    },
+  );
+
+  await expect(execute(signal, executor)).rejects.toBe(customReason);
+
+  expect(executor).not.toHaveBeenCalled();
+});
+
+test('async abort callback with custom reason', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const customReason = new Error('Custom abort reason');
+  const callbackDeferred = defer<void>();
+
+  const callback = jest.fn((reason?: unknown) => {
+    expect(reason).toBe(customReason);
+    return callbackDeferred.promise;
+  });
+
+  let result: PromiseSettledResult<string> | undefined;
+
+  execute<string>(signal, (resolve, reject) => {
+    return callback;
+  }).then(
+    value => {
+      result = {status: 'fulfilled', value};
+    },
+    reason => {
+      result = {status: 'rejected', reason};
+    },
+  );
+
+  abortController.abort(customReason);
+
+  await nextTick();
+
+  expect(result).toBeUndefined();
+
+  callbackDeferred.resolve();
+
+  await nextTick();
+
+  expect(result).toMatchObject({
+    status: 'rejected',
+    reason: customReason,
+  });
+  expect(callback).toHaveBeenCalledTimes(1);
+});

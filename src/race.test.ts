@@ -194,3 +194,94 @@ test('reject during cleanup', async () => {
   expect(signal.addEventListener).toHaveBeenCalledTimes(1);
   expect(signal.removeEventListener).toHaveBeenCalledTimes(1);
 });
+
+test('abort with custom reason', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const customReason = new Error('Custom abort reason');
+
+  const deferred1 = defer<string>();
+  const deferred2 = defer<number>();
+
+  let innerSignal: AbortSignal;
+
+  const promise = race(signal, signal => {
+    innerSignal = signal;
+    return [deferred1.promise, deferred2.promise];
+  });
+
+  abortController.abort(customReason);
+
+  expect(innerSignal!.aborted).toBe(true);
+
+  // When external signal is aborted with custom reason,
+  // promises should reject with AbortError
+  deferred1.reject(new AbortError());
+  deferred2.reject(new AbortError());
+
+  // The result should be AbortError (first rejection), not custom reason
+  await expect(promise).rejects.toMatchObject({
+    name: 'AbortError',
+  });
+});
+
+test('abort before race with custom reason', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const customReason = new Error('Custom abort reason');
+  abortController.abort(customReason);
+
+  const executor = jest.fn((signal: AbortSignal) => [Promise.resolve('test')]);
+
+  await expect(race(signal, executor)).rejects.toBe(customReason);
+
+  expect(executor).not.toHaveBeenCalled();
+});
+
+test('innerSignal receives custom reason on external abort', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const customReason = new Error('Custom abort reason');
+
+  const deferred1 = defer<string>();
+
+  let innerSignal: AbortSignal;
+
+  race(signal, signal => {
+    innerSignal = signal;
+    return [deferred1.promise];
+  });
+
+  abortController.abort(customReason);
+
+  expect(innerSignal!.aborted).toBe(true);
+  expect(innerSignal!.reason).toBe(customReason);
+});
+
+test('innerSignal receives descriptive reason on promise settlement', async () => {
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const deferred1 = defer<string>();
+  const deferred2 = defer<number>();
+
+  let innerSignal: AbortSignal;
+
+  race(signal, signal => {
+    innerSignal = signal;
+    return [deferred1.promise, deferred2.promise];
+  });
+
+  deferred1.resolve('test');
+
+  await nextTick();
+
+  expect(innerSignal!.aborted).toBe(true);
+  expect(innerSignal!.reason).toMatchObject({
+    name: 'AbortError',
+    message: 'One of the promises passed to race() settled',
+  });
+});
