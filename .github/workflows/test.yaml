@@ -4,7 +4,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -13,6 +13,8 @@ jobs:
             node-options: --experimental-abortcontroller
           - node-version: 16.x
           - node-version: 18.x
+          - node-version: 20.x
+          - node-version: 22.x
 
 
     steps:
